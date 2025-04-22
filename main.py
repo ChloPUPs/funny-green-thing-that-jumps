@@ -1,9 +1,10 @@
 import pygame as pg
 import sys
+import random
 
 screen = pg.display.set_mode((640, 480))
 pg.display.set_caption("funny green thing that jumps")
-window_icon = pg.image.load("icon.ico")
+window_icon = pg.image.load("assets/icon.ico")
 pg.display.set_icon(window_icon)
 
 clock = pg.Clock()
@@ -37,11 +38,36 @@ class Player:
     def jump(self):
         self.velocity_y = -10
 
+class Pipe:
+    def __init__(self, speed: float):
+        self.brect = pg.Rect(500, random.randrange(200, 451), 100, 800)
+        self.trect = pg.Rect(self.brect.x, (self.brect.y - self.brect.height) - 170, self.brect.width, self.brect.height)
+        self.speed = speed
+
+    def update(self):
+        self.brect.x -= self.speed
+        self.trect.x = self.brect.x
+        self.trect.y = (self.brect.y - self.brect.height) - 170
+
+        if self.brect.right < 0:
+            self.brect.left = 640
+            self.brect.y = random.randrange(200, 451)
+    
+    def draw(self):
+        pg.draw.rect(screen, [255, 0, 0], self.brect)
+        pg.draw.rect(screen, [255, 0, 0], self.trect)
+
 player = Player(100, 50, 32, 32, [255, 0, 0])
+pipe = Pipe(3)
 
 def draw_screen(background_color: list[int]):
     screen.fill(background_color)
     player.draw()
+    pipe.draw()
+
+def update_game():
+    player.update()
+    pipe.update()
 
 while True:
     for e in pg.event.get():
@@ -75,7 +101,7 @@ while True:
                 key_is_pressed["space"] = False
     
     draw_screen([0, 200, 255])
-    player.update()
+    update_game()
 
     clock.tick(framerate)
     pg.display.update()
