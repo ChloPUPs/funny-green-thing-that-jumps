@@ -2,6 +2,10 @@ import pygame as pg
 import sys
 
 screen = pg.display.set_mode((640, 480))
+pg.display.set_caption("funny green thing that jumps")
+window_icon = pg.image.load("icon.ico")
+pg.display.set_icon(window_icon)
+
 clock = pg.Clock()
 framerate = 60
 

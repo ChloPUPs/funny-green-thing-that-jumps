@@ -1,2 +1,6 @@
 .mypy_cache/
 testing/
+build/
+dist/
+*.spec
+*.exe
