@@ -2,11 +2,17 @@ import pygame as pg
 import sys
 import random
 from time import *
+from pygame import mixer as mx
+
+pg.init()
 
 screen = pg.display.set_mode((640, 480))
 pg.display.set_caption("funny green thing that jumps")
 window_icon = pg.image.load("assets/icon.ico")
 pg.display.set_icon(window_icon)
+
+channel1 = mx.Channel(1)
+channel2 = mx.Channel(2)
 
 clock = pg.Clock()
 framerate = 60
@@ -39,6 +45,8 @@ class Player:
         screen.blit(self.img, self.rect.topleft)
     
     def jump(self):
+        jump_sound = mx.Sound("sounds/jump.mp3")
+        channel2.play(jump_sound)
         self.velocity_y = -10
 
 class Pipe:
@@ -82,6 +90,8 @@ def update_game():
     pipe.update()
 
 def game_over():
+    death_sound = mx.Sound("sounds/pipehit.mp3")
+    channel1.play(death_sound)
     sleep(1)
     pipe.brect.x = 500
     player.rect.y = player.starty
@@ -90,6 +100,7 @@ def game_over():
 while True:
     for e in pg.event.get():
         if e.type == pg.QUIT:
+            pg.quit()
             sys.exit(0)
         
         if e.type == pg.KEYDOWN:
