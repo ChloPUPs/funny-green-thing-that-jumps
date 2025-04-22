@@ -19,6 +19,7 @@ class Player:
         self.rgb: list[int] = rgb
         self.velocity_y = 0
         self.gravity: float = 0.5
+        self.img = pg.image.load("./assets/fbplayer.png")
 
     def update(self):
         self.velocity_y += self.gravity
@@ -26,7 +27,8 @@ class Player:
         self.rect.y += self.velocity_y
 
     def draw(self):
-        pg.draw.rect(screen, self.rgb, self.rect)
+        # pg.draw.rect(screen, self.rgb, self.rect)
+        screen.blit(self.img, self.rect.topleft)
     
     def jump(self):
         self.velocity_y = -10
@@ -68,7 +70,7 @@ while True:
             if e.key == pg.K_SPACE:
                 key_is_pressed["space"] = False
     
-    draw_screen([0, 0, 0])
+    draw_screen([0, 200, 255])
     player.update()
 
     clock.tick(framerate)
