@@ -13,6 +13,7 @@ pg.display.set_icon(window_icon)
 
 channel1 = mx.Channel(1)
 channel2 = mx.Channel(2)
+channel3 = mx.Channel(3)
 
 clock = pg.Clock()
 framerate = 60
@@ -41,11 +42,10 @@ class Player:
         self.rect.y += self.velocity_y
 
     def draw(self):
-        # pg.draw.rect(screen, self.rgb, self.rect)
         screen.blit(self.img, self.rect.topleft)
     
     def jump(self):
-        jump_sound = mx.Sound("sounds/jump.mp3")
+        jump_sound = mx.Sound("assets/sounds/jump.mp3")
         channel2.play(jump_sound)
         self.velocity_y = -10
 
@@ -62,9 +62,12 @@ class Pipe:
         self.trect.x = self.brect.x
         self.trect.y = (self.brect.y - self.brect.height) - 170
 
+        global new_pipe
+
         if self.brect.right < 0:
             self.brect.left = 640
             self.brect.y = random.randrange(200, 451)
+            new_pipe = True
     
     def draw(self):
         screen.blit(self.bimg, self.brect.topleft)
@@ -73,6 +76,11 @@ class Pipe:
 player = Player(100, 50, 32, 32, [255, 0, 0])
 player_hit = False
 pipe = Pipe(3)
+
+points = 0
+new_pipe = True
+
+font = pg.Font("freesansbold.ttf", 32)
 
 def player_just_hit() -> bool:
     if player.rect.colliderect(pipe.brect) or player.rect.colliderect(pipe.trect) or player.rect.y < 0 or player.rect.y > 480 - 32:
@@ -84,18 +92,28 @@ def draw_screen(background_color: list[int]):
     screen.fill(background_color)
     player.draw()
     pipe.draw()
+    draw_score()
 
 def update_game():
     player.update()
     pipe.update()
 
 def game_over():
-    death_sound = mx.Sound("sounds/pipehit.mp3")
+    global points
+    global new_pipe
+    death_sound = mx.Sound("assets/sounds/pipehit.mp3")
     channel1.play(death_sound)
     sleep(1)
     pipe.brect.x = 500
+    pipe.brect.y = random.randrange(200, 451)
     player.rect.y = player.starty
     player.velocity_y = 0
+    points = 0
+    new_pipe = True
+
+def draw_score():
+    font_render = pg.Font.render(font, f"Points: {points}", True, (255, 255, 255))
+    screen.blit(font_render, (10, 10))
 
 while True:
     for e in pg.event.get():
@@ -131,6 +149,12 @@ while True:
 
     if player_just_hit() and not player_hit:
         game_over()
+
+    if player.rect.centerx > pipe.brect.centerx and new_pipe:
+        point_sound = mx.Sound("assets/sounds/point.mp3")
+        channel3.play(point_sound)
+        points += 1
+        new_pipe = False
     
     draw_screen([0, 200, 255])
     update_game()
