@@ -2,4 +2,9 @@
 
 flappy bird but worse
 
-!(image)[./assets/icon.ico]
+![image](./assets/fbplayer.png)
+
+![image](./assets/cloud.png)
+![image](./assets/cloud.png)
+![image](./assets/cloud.png)
+![image](./assets/cloud.png)
