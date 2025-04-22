@@ -73,6 +73,21 @@ class Pipe:
         screen.blit(self.bimg, self.brect.topleft)
         screen.blit(self.timg, self.trect.topleft)
 
+class Cloud:
+    img = pg.image.load("assets/cloud.png")
+    def __init__(self, x, y, speed):
+        self.x = x
+        self.y = y
+        self.speed = speed
+
+    def update(self):
+        self.x -= self.speed
+        if self.x < 0 - 64:
+            self.x = 640
+    
+    def draw(self):
+        screen.blit(Cloud.img, (self.x, self.y))
+
 player = Player(100, 50, 32, 32, [255, 0, 0])
 player_hit = False
 pipe = Pipe(3)
@@ -82,6 +97,13 @@ new_pipe = True
 
 font = pg.Font("freesansbold.ttf", 32)
 
+cloudCount = 10
+
+clouds: list[Cloud] = []
+
+for i in range(cloudCount):
+    clouds.append(Cloud(random.randrange(0, 640), random.randrange(0, 480), pipe.speed / 2))
+
 def player_just_hit() -> bool:
     if player.rect.colliderect(pipe.brect) or player.rect.colliderect(pipe.trect) or player.rect.y < 0 or player.rect.y > 480 - 32:
         return True
@@ -90,6 +112,8 @@ def player_just_hit() -> bool:
 
 def draw_screen(background_color: list[int]):
     screen.fill(background_color)
+    for i in clouds:
+        i.draw()
     player.draw()
     pipe.draw()
     draw_score()
@@ -97,6 +121,8 @@ def draw_screen(background_color: list[int]):
 def update_game():
     player.update()
     pipe.update()
+    for i in clouds:
+        i.update()
 
 def game_over():
     global points
@@ -146,6 +172,9 @@ while True:
                 key_is_pressed["up"] = False
             if e.key == pg.K_SPACE:
                 key_is_pressed["space"] = False
+
+        if e.type == pg.MOUSEBUTTONDOWN:
+            player.jump()
 
     if player_just_hit() and not player_hit:
         game_over()
